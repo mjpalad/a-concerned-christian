@@ -12,26 +12,24 @@ const Navbar = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 bg-background/90 backdrop-blur-sm border-b">
+    <nav className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-md border-b">
       <div className="container mx-auto flex items-center justify-between h-16 px-4">
-        <a href="#" className="font-serif text-lg font-semibold text-primary" style={{ fontFamily: "'Lora', serif" }}>
+        <a href="#" className="text-lg font-semibold text-primary" style={{ fontFamily: "'Lora', serif" }}>
           A Concerned Christian
         </a>
 
-        {/* Desktop */}
         <div className="hidden md:flex items-center gap-6">
           {navLinks.map((link) => (
             <a
               key={link.href}
               href={link.href}
-              className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors"
+              className="text-sm font-medium text-muted-foreground hover:text-accent transition-colors"
             >
               {link.label}
             </a>
           ))}
         </div>
 
-        {/* Mobile toggle */}
         <Button
           variant="ghost"
           size="icon"
@@ -43,14 +41,13 @@ const Navbar = () => {
         </Button>
       </div>
 
-      {/* Mobile menu */}
       {mobileOpen && (
         <div className="md:hidden border-t bg-background px-4 pb-4">
           {navLinks.map((link) => (
             <a
               key={link.href}
               href={link.href}
-              className="block py-3 text-sm font-medium text-muted-foreground hover:text-primary transition-colors"
+              className="block py-3 text-sm font-medium text-muted-foreground hover:text-accent transition-colors"
               onClick={() => setMobileOpen(false)}
             >
               {link.label}
