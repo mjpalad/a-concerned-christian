@@ -8,7 +8,11 @@ const AboutSection = () => {
           {/* Photo */}
           <div className="shrink-0">
             <Avatar className="w-48 h-48 md:w-56 md:h-56 border-4 border-accent/30 shadow-lg">
-              <AvatarImage src="" alt="Eric Wait" />
+              <AvatarImage 
+                src="/EricWait.png" 
+                alt="Eric Wait" 
+                className="object-cover" 
+              />
               <AvatarFallback className="text-4xl font-semibold bg-secondary text-muted-foreground" style={{ fontFamily: "'Lora', serif" }}>
                 EW
               </AvatarFallback>
