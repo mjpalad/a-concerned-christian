@@ -9,7 +9,7 @@ const AboutSection = () => {
           <div className="shrink-0">
             <Avatar className="w-48 h-48 md:w-56 md:h-56 border-4 border-accent/30 shadow-lg">
               <AvatarImage 
-                src="/EricWait.png" 
+                src={`${import.meta.env.BASE_URL}EricWait.png`} 
                 alt="Eric Wait" 
                 className="object-cover" 
               />
