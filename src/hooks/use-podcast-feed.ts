@@ -10,36 +10,29 @@ export interface PodcastEpisode {
 }
 
 const FEED_URL = "https://feeds.simplecast.com/V2lHo6VQ";
-const CORS_PROXY = "https://api.codetabs.com/v1/proxy/?quest=";
 
 async function fetchPodcastFeed(): Promise<PodcastEpisode[]> {
-  const res = await fetch(`${CORS_PROXY}${encodeURIComponent(FEED_URL)}`);
+  const res = await fetch(
+    `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(FEED_URL)}`
+  );
   if (!res.ok) throw new Error("Failed to fetch podcast feed");
-  const text = await res.text();
-  const parser = new DOMParser();
-  const xml = parser.parseFromString(text, "text/xml");
-  const items = xml.querySelectorAll("item");
+  const data = await res.json();
+  if (data.status !== "ok") throw new Error("RSS feed error");
 
-  const episodes: PodcastEpisode[] = [];
-  items.forEach((item, i) => {
-    if (i >= 5) return; // Latest 5 episodes
-    const enclosure = item.querySelector("enclosure");
-    episodes.push({
-      title: item.querySelector("title")?.textContent ?? "",
-      description: item.querySelector("description")?.textContent ?? "",
-      pubDate: item.querySelector("pubDate")?.textContent ?? "",
-      audioUrl: enclosure?.getAttribute("url") ?? "",
-      duration: item.querySelector("itunes\\:duration, duration")?.textContent ?? "",
-      link: item.querySelector("link")?.textContent ?? "",
-    });
-  });
-  return episodes;
+  return (data.items ?? []).slice(0, 5).map((item: any) => ({
+    title: item.title ?? "",
+    description: item.description ?? "",
+    pubDate: item.pubDate ?? "",
+    audioUrl: item.enclosure?.link ?? "",
+    duration: "",
+    link: item.link ?? "",
+  }));
 }
 
 export function usePodcastFeed() {
   return useQuery({
     queryKey: ["podcast-feed"],
     queryFn: fetchPodcastFeed,
-    staleTime: 1000 * 60 * 30, // 30 minutes
+    staleTime: 1000 * 60 * 30,
   });
 }
