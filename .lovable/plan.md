@@ -2,7 +2,7 @@
 # A Concerned Christian — Website for Eric Wait
 
 ## Overview
-A warm, traditional-styled single-page website for retired pastor Eric Wait's podcast "A Concerned Christian." The site highlights the podcast front and center, includes a bio section with photo, and a contact form.
+A warm, traditional-styled single-page website for retired pastor Eric Wait's podcast "A Concerned Christian." The site highlights the podcast front and center, includes a bio section with photo, and a link to Eric's email.
 
 ## Design
 - **Color palette**: Warm, earthy tones — deep brown/amber primary, cream/off-white background, muted gold accents. Classic serif font for headings, clean sans-serif for body text.
@@ -32,9 +32,7 @@ A warm, traditional-styled single-page website for retired pastor Eric Wait's po
 - Each platform shown as a recognizable branded button/icon
 
 ### 4. Contact
-- Simple contact form: Name, Email, Message
-- Client-side validation
-- Toast confirmation on submit (no backend wired yet — form will be ready to connect to a service later)
+- Simple message with link to email Eric
 
 ### 5. Footer
 - "A Concerned Christian" branding
