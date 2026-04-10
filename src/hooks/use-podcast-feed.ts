@@ -10,7 +10,7 @@ export interface PodcastEpisode {
 }
 
 const FEED_URL = "https://feeds.simplecast.com/V2lHo6VQ";
-const CORS_PROXY = "https://api.allorigins.win/raw?url=";
+const CORS_PROXY = "https://corsproxy.io/?url=";
 
 async function fetchPodcastFeed(): Promise<PodcastEpisode[]> {
   const res = await fetch(`${CORS_PROXY}${encodeURIComponent(FEED_URL)}`);
