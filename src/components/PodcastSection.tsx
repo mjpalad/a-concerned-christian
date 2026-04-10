@@ -32,7 +32,7 @@ const platforms = [
   },
   {
     name: "RSS Feed",
-    href: "https://feeds.simplecast.com/V2lHo6VQ",
+    href: "https://api.riverside.fm/hosting/wWERn1AV.rss",
     icon: () => <Rss className="w-5 h-5" />,
   },
 ];
