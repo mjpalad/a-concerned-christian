@@ -12,7 +12,7 @@ const HeroSection = () => {
       {/* Dark overlay for text readability */}
       <div className="absolute inset-0 bg-gradient-to-t from-foreground/80 via-foreground/40 to-foreground/20" />
 
-      <div className="relative container mx-auto px-4 text-center py-20 flex flex-col items-center justify-end min-h-[70vh]">
+      <div className="relative container mx-auto px-4 text-center py-20 flex flex-col items-center justify-end min-h-[45vh]">
         <h1
           className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold leading-tight mb-4 text-background drop-shadow-lg"
           style={{ fontFamily: "'Lora', serif" }}
