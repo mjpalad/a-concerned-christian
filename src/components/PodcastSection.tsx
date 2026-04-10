@@ -1,5 +1,6 @@
 import { Headphones, Rss } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import EpisodeList from "@/components/EpisodeList";
 
 const platforms = [
   {
@@ -31,7 +32,7 @@ const platforms = [
   },
   {
     name: "RSS Feed",
-    href: "https://api.riverside.fm/hosting/wWERn1AV.rss",
+    href: "https://feeds.simplecast.com/V2lHo6VQ",
     icon: () => <Rss className="w-5 h-5" />,
   },
 ];
@@ -71,11 +72,14 @@ const PodcastSection = () => {
           ))}
         </div>
 
-        <div className="max-w-2xl mx-auto bg-card rounded-2xl border p-8 shadow-sm">
-          <p className="text-sm text-muted-foreground mb-2">Latest Episode</p>
-          <div className="h-20 flex items-center justify-center text-muted-foreground/50 text-sm">
-            Embed your Spotify or podcast player here
-          </div>
+        <div className="max-w-2xl mx-auto">
+          <h3
+            className="text-xl font-semibold text-primary mb-6"
+            style={{ fontFamily: "'Lora', serif" }}
+          >
+            Latest Episodes
+          </h3>
+          <EpisodeList />
         </div>
       </div>
     </section>
