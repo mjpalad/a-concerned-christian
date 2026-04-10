@@ -48,43 +48,44 @@ function parseRSS(xmlText: string): PodcastEpisode[] {
 }
 
 async function fetchPodcastFeed(): Promise<PodcastEpisode[]> {
-  // First attempt: try rss2json as it's cleaner
-  try {
+  const fetchWithRss2Json = async () => {
     const res = await fetch(
       `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(FEED_URL)}&t=${Date.now()}`
     );
-    if (res.ok) {
-      const data = await res.json();
-      if (data.status === "ok" && data.items && data.items.length > 0) {
-        return data.items.map((item: any) => ({
-          title: item.title ?? "",
-          description: item.description ?? "",
-          pubDate: item.pubDate ?? "",
-          audioUrl: item.enclosure?.link ?? "",
-          duration: item.enclosure?.duration ? Math.floor(item.enclosure.duration / 60) + " min" : "",
-          link: item.link ?? "",
-        }));
-      }
-    }
-  } catch (e) {
-    console.warn("rss2json failed, attempting raw fetch:", e);
-  }
+    if (!res.ok) throw new Error("rss2json failed");
+    const data = await res.json();
+    if (data.status !== "ok" || !data.items || data.items.length === 0) throw new Error("rss2json empty");
+    
+    return data.items.map((item: any) => ({
+      title: item.title ?? "",
+      description: item.description ?? "",
+      pubDate: item.pubDate ?? "",
+      audioUrl: item.enclosure?.link ?? "",
+      duration: item.enclosure?.duration ? Math.floor(item.enclosure.duration / 60) + " min" : "",
+      link: item.link ?? "",
+    }));
+  };
 
-  // Second attempt: Fetch raw RSS through a CORS proxy and parse manually
-  // Using allorigins.win to bypass CORS
+  const fetchRawAndParse = async () => {
+    // Using corsproxy.io with the recommended ?url= format
+    // Note: The cache buster 't' should be on the target URL, not the proxy URL
+    const targetUrl = `${FEED_URL}?t=${Date.now()}`;
+    const res = await fetch(`https://corsproxy.io/?url=${encodeURIComponent(targetUrl)}`);
+    if (!res.ok) throw new Error("corsproxy failed");
+    const xmlText = await res.text();
+    if (!xmlText) throw new Error("corsproxy empty");
+    const episodes = parseRSS(xmlText);
+    if (episodes.length === 0) throw new Error("Manual parse empty");
+    return episodes;
+  };
+
+  // Race both methods for speed, but catch errors to ensure we don't fail early
   try {
-    const res = await fetch(`https://api.allorigins.win/get?url=${encodeURIComponent(FEED_URL)}&t=${Date.now()}`);
-    if (res.ok) {
-      const data = await res.json();
-      if (data.contents) {
-        return parseRSS(data.contents);
-      }
-    }
+    return await Promise.any([fetchWithRss2Json(), fetchRawAndParse()]);
   } catch (e) {
-    console.error("Raw RSS fetch failed:", e);
+    console.error("All fetch sources failed:", e);
+    throw new Error("Failed to load episodes. Please try again later.");
   }
-
-  throw new Error("Failed to fetch podcast feed from all sources");
 }
 
 export function usePodcastFeed() {
