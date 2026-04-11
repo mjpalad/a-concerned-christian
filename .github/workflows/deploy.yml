@@ -32,6 +32,9 @@ jobs:
       - name: Fetch RSS Feed
         run: curl -sf "https://api.riverside.fm/hosting/wWERn1AV.rss" > public/podcast-feed.xml
 
+      - name: Fetch Transcripts
+        run: node scripts/fetch-transcripts.cjs
+
       - run: npm install
       - run: npm run build
 

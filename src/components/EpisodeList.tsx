@@ -69,7 +69,7 @@ function EpisodeCard({ episode }: { episode: PodcastEpisode }) {
             )}
             {episode.transcriptUrl && (
               <Link 
-                to={`/transcript?url=${encodeURIComponent(episode.transcriptUrl)}&title=${encodeURIComponent(episode.title)}`}
+                to={`/transcript?id=${encodeURIComponent(episode.id)}&url=${encodeURIComponent(episode.transcriptUrl)}&title=${encodeURIComponent(episode.title)}`}
                 className="flex items-center gap-1 text-accent hover:underline ml-auto"
               >
                 <FileText className="w-3 h-3" />

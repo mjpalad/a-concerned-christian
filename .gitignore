@@ -22,3 +22,7 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Podcast Data (Generated at build time)
+public/podcast-feed.xml
+public/transcripts/

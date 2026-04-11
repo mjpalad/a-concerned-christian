@@ -9,6 +9,7 @@ import { useEffect } from "react";
 const Transcript = () => {
   const [searchParams] = useSearchParams();
   const transcriptUrl = searchParams.get("url");
+  const episodeId = searchParams.get("id");
   const title = searchParams.get("title") || "Episode Transcript";
 
   // Scroll to top on mount
@@ -17,8 +18,22 @@ const Transcript = () => {
   }, []);
 
   const { data: transcript, isLoading, error } = useQuery({
-    queryKey: ["transcript", transcriptUrl],
+    queryKey: ["transcript", episodeId, transcriptUrl],
     queryFn: async () => {
+      // 1. Try local fetch first (if we have an ID)
+      if (episodeId) {
+        const safeId = episodeId.replace(/[^a-z0-9]/gi, '_').toLowerCase();
+        try {
+          const res = await fetch(`${window.location.origin}/transcripts/${safeId}.txt`);
+          if (res.ok) {
+            console.log("Using local transcript:", safeId);
+            return await res.text();
+          }
+        } catch (e) {
+          console.log("Local transcript not found, falling back to proxies");
+        }
+      }
+
       if (!transcriptUrl) throw new Error("No transcript URL provided");
       
       const proxies = [
