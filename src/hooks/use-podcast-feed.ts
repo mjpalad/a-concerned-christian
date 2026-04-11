@@ -47,6 +47,17 @@ function parseRSS(xmlText: string): PodcastEpisode[] {
   });
 }
 
+interface Rss2JsonItem {
+  title?: string;
+  description?: string;
+  pubDate?: string;
+  enclosure?: {
+    link?: string;
+    duration?: number;
+  };
+  link?: string;
+}
+
 async function fetchPodcastFeed(): Promise<PodcastEpisode[]> {
   const fetchWithRss2Json = async () => {
     const res = await fetch(
@@ -56,7 +67,7 @@ async function fetchPodcastFeed(): Promise<PodcastEpisode[]> {
     const data = await res.json();
     if (data.status !== "ok" || !data.items || data.items.length === 0) throw new Error("rss2json empty");
     
-    return data.items.map((item: any) => ({
+    return data.items.map((item: Rss2JsonItem) => ({
       title: item.title ?? "",
       description: item.description ?? "",
       pubDate: item.pubDate ?? "",
