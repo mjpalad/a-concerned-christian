@@ -67,6 +67,34 @@ interface Rss2JsonItem {
   transcriptUrl?: string; // rss2json might not support this, but added for completeness
 }
 
+async function fetchWithProxy(targetUrl: string): Promise<string> {
+  const proxies = [
+    (url: string) => `https://api.allorigins.win/get?url=${encodeURIComponent(url)}`,
+    (url: string) => `https://api.codetabs.com/v1/proxy?url=${encodeURIComponent(url)}`,
+  ];
+
+  for (const getProxyUrl of proxies) {
+    try {
+      const proxyUrl = getProxyUrl(targetUrl);
+      const res = await fetch(proxyUrl);
+      if (!res.ok) continue;
+
+      // AllOrigins returns JSON with a 'contents' field
+      if (proxyUrl.includes("allorigins")) {
+        const data = await res.json();
+        return data.contents;
+      }
+      
+      // CodeTabs returns raw text
+      return await res.text();
+    } catch (e) {
+      console.warn(`Proxy ${getProxyUrl(targetUrl)} failed, trying next...`);
+      continue;
+    }
+  }
+  throw new Error("All proxies failed to fetch the feed.");
+}
+
 async function fetchPodcastFeed(): Promise<PodcastEpisode[]> {
   const fetchWithRss2Json = async () => {
     const res = await fetch(
@@ -88,24 +116,26 @@ async function fetchPodcastFeed(): Promise<PodcastEpisode[]> {
   };
 
   const fetchRawAndParse = async () => {
-    // Using corsproxy.io with the recommended ?url= format
-    // Note: The cache buster 't' should be on the target URL, not the proxy URL
     const targetUrl = `${FEED_URL}?t=${Date.now()}`;
-    const res = await fetch(`https://corsproxy.io/?url=${encodeURIComponent(targetUrl)}`);
-    if (!res.ok) throw new Error("corsproxy failed");
-    const xmlText = await res.text();
-    if (!xmlText) throw new Error("corsproxy empty");
+    const xmlText = await fetchWithProxy(targetUrl);
     const episodes = parseRSS(xmlText);
     if (episodes.length === 0) throw new Error("Manual parse empty");
     return episodes;
   };
 
-  // Race both methods for speed, but catch errors to ensure we don't fail early
+  // We prioritize the raw fetch and manual parse because it supports custom tags (transcripts)
+  // that third-party services like rss2json often strip out.
   try {
-    return await Promise.any([fetchWithRss2Json(), fetchRawAndParse()]);
-  } catch (e) {
-    console.error("All fetch sources failed:", e);
-    throw new Error("Failed to load episodes. Please try again later.");
+    // Attempt the raw parse first
+    return await fetchRawAndParse();
+  } catch (rawError) {
+    console.warn("Manual RSS parse failed, falling back to rss2json:", rawError);
+    try {
+      return await fetchWithRss2Json();
+    } catch (rssError) {
+      console.error("All fetch sources failed:", rssError);
+      throw new Error("Failed to load episodes. Please try again later.");
+    }
   }
 }
 

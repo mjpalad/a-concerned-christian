@@ -21,10 +21,30 @@ const Transcript = () => {
     queryFn: async () => {
       if (!transcriptUrl) throw new Error("No transcript URL provided");
       
-      // Use corsproxy to fetch the plain text file
-      const res = await fetch(`https://corsproxy.io/?url=${encodeURIComponent(transcriptUrl)}`);
-      if (!res.ok) throw new Error("Failed to fetch transcript");
-      return res.text();
+      const proxies = [
+        (url: string) => `https://api.allorigins.win/get?url=${encodeURIComponent(url)}`,
+        (url: string) => `https://api.codetabs.com/v1/proxy?url=${encodeURIComponent(url)}`,
+      ];
+
+      for (const getProxyUrl of proxies) {
+        try {
+          const proxyUrl = getProxyUrl(transcriptUrl);
+          const res = await fetch(proxyUrl);
+          if (!res.ok) continue;
+
+          // AllOrigins returns JSON with a 'contents' field
+          if (proxyUrl.includes("allorigins")) {
+            const data = await res.json();
+            return data.contents;
+          }
+          
+          // CodeTabs returns raw text
+          return await res.text();
+        } catch (e) {
+          continue;
+        }
+      }
+      throw new Error("All proxies failed to fetch the transcript.");
     },
     enabled: !!transcriptUrl,
   });
