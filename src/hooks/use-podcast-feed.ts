@@ -7,6 +7,7 @@ export interface PodcastEpisode {
   audioUrl: string;
   duration: string;
   link: string;
+  transcriptUrl?: string;
 }
 
 const FEED_URL = "https://api.riverside.fm/hosting/wWERn1AV.rss";
@@ -29,6 +30,13 @@ function parseRSS(xmlText: string): PodcastEpisode[] {
     const enclosure = item.querySelector("enclosure");
     const audioUrl = enclosure?.getAttribute("url") ?? "";
     
+    // Find transcript in podcast namespace
+    // Some browsers/parsers handle namespaces differently, so we try a few selectors
+    const transcriptElement = item.getElementsByTagNameNS("https://podcastindex.org/namespace/1.0", "transcript")[0] ||
+                             item.querySelector("podcast\\:transcript") ||
+                             item.querySelector("transcript");
+    const transcriptUrl = transcriptElement?.getAttribute("url") ?? undefined;
+    
     // Duration parsing (could be HH:MM:SS or seconds)
     let duration = item.querySelector("itunes\\:duration")?.textContent ?? "";
     if (duration.includes(":")) {
@@ -43,7 +51,7 @@ function parseRSS(xmlText: string): PodcastEpisode[] {
       duration = `${Math.floor(parseInt(duration, 10) / 60)} min`;
     }
 
-    return { title, description, pubDate, audioUrl, duration, link };
+    return { title, description, pubDate, audioUrl, duration, link, transcriptUrl };
   });
 }
 
@@ -56,6 +64,7 @@ interface Rss2JsonItem {
     duration?: number;
   };
   link?: string;
+  transcriptUrl?: string; // rss2json might not support this, but added for completeness
 }
 
 async function fetchPodcastFeed(): Promise<PodcastEpisode[]> {
@@ -74,6 +83,7 @@ async function fetchPodcastFeed(): Promise<PodcastEpisode[]> {
       audioUrl: item.enclosure?.link ?? "",
       duration: item.enclosure?.duration ? Math.floor(item.enclosure.duration / 60) + " min" : "",
       link: item.link ?? "",
+      transcriptUrl: item.transcriptUrl,
     }));
   };
 

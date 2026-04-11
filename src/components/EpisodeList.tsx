@@ -1,8 +1,9 @@
-import { Play, Pause, Clock, Calendar } from "lucide-react";
+import { Play, Pause, Clock, Calendar, FileText } from "lucide-react";
 import { usePodcastFeed, type PodcastEpisode } from "@/hooks/use-podcast-feed";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
+import { Link } from "react-router-dom";
 
 function formatDate(dateStr: string) {
   try {
@@ -65,6 +66,15 @@ function EpisodeCard({ episode }: { episode: PodcastEpisode }) {
                 <Clock className="w-3 h-3" />
                 {episode.duration}
               </span>
+            )}
+            {episode.transcriptUrl && (
+              <Link 
+                to={`/transcript?url=${encodeURIComponent(episode.transcriptUrl)}&title=${encodeURIComponent(episode.title)}`}
+                className="flex items-center gap-1 text-accent hover:underline ml-auto"
+              >
+                <FileText className="w-3 h-3" />
+                Read Transcript
+              </Link>
             )}
           </div>
         </div>

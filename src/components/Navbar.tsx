@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Link, useLocation } from "react-router-dom";
 
 const navLinks = [
   { label: "About", href: "#about" },
@@ -10,16 +11,23 @@ const navLinks = [
 
 const Navbar = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
+  const location = useLocation();
+  const isHomePage = location.pathname === "/";
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-md border-b">
       <div className="container mx-auto flex items-center justify-between h-16 px-4">
-        <a href="#" className="text-lg font-semibold text-primary" style={{ fontFamily: "'Lora', serif" }}>
+        <Link 
+          to="/" 
+          className="text-lg font-semibold text-primary" 
+          style={{ fontFamily: "'Lora', serif" }}
+          onClick={() => isHomePage && window.scrollTo(0, 0)}
+        >
           A Concerned Christian
-        </a>
+        </Link>
 
         <div className="hidden md:flex items-center gap-6">
-          {navLinks.map((link) => (
+          {isHomePage && navLinks.map((link) => (
             <a
               key={link.href}
               href={link.href}
@@ -28,6 +36,14 @@ const Navbar = () => {
               {link.label}
             </a>
           ))}
+          {!isHomePage && (
+            <Link 
+              to="/" 
+              className="text-sm font-medium text-muted-foreground hover:text-accent transition-colors"
+            >
+              Home
+            </Link>
+          )}
         </div>
 
         <Button
@@ -43,7 +59,7 @@ const Navbar = () => {
 
       {mobileOpen && (
         <div className="md:hidden border-t bg-background px-4 pb-4">
-          {navLinks.map((link) => (
+          {isHomePage && navLinks.map((link) => (
             <a
               key={link.href}
               href={link.href}
@@ -53,6 +69,15 @@ const Navbar = () => {
               {link.label}
             </a>
           ))}
+          {!isHomePage && (
+            <Link 
+              to="/" 
+              className="block py-3 text-sm font-medium text-muted-foreground hover:text-accent transition-colors"
+              onClick={() => setMobileOpen(false)}
+            >
+              Home
+            </Link>
+          )}
         </div>
       )}
     </nav>
