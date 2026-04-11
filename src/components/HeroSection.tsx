@@ -3,14 +3,16 @@ import heroBanner from "@/assets/hero-banner.png";
 
 const HeroSection = () => {
   return (
-    <section className="relative pt-16 min-h-[85vh] flex items-center justify-center overflow-hidden">
-      {/* Background image */}
+    <section className="relative pt-16 min-h-[85vh] flex items-center justify-center overflow-hidden bg-slate-950">
+      {/* Background image with gradient fallback */}
       <div
-        className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-        style={{ backgroundImage: `url(${heroBanner})` }}
+        className="absolute inset-0 bg-cover bg-center bg-no-repeat transition-opacity duration-1000"
+        style={{ 
+          backgroundImage: `linear-gradient(to bottom, rgba(15, 23, 42, 0.5), rgba(15, 23, 42, 0.8)), url(${heroBanner})`,
+        }}
       />
-      {/* Dark overlay for text readability */}
-      <div className="absolute inset-0 bg-gradient-to-t from-foreground/80 via-foreground/40 to-foreground/20" />
+      {/* Additional dark overlay for text readability */}
+      <div className="absolute inset-0 bg-gradient-to-t from-slate-950/60 via-slate-950/20 to-transparent" />
 
       <div className="relative container mx-auto px-4 text-center py-20 flex flex-col items-center justify-end min-h-[45vh]">
         <h1
