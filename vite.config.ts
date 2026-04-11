@@ -13,7 +13,7 @@ export default defineConfig(({ mode }) => ({
     },
   },
   plugins: [react(), mode === "development" && componentTagger()].filter(Boolean),
-  base: process.env.NODE_ENV === 'production' ? '/a-concerned-christian/' : '/',
+  base: "/",
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
