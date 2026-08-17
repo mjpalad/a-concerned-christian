@@ -36,7 +36,8 @@ async function main() {
   const xmlData = fs.readFileSync(RSS_FILE, 'utf-8');
   const parser = new XMLParser({
     ignoreAttributes: false,
-    attributeNamePrefix: ""
+    attributeNamePrefix: "",
+    processEntities: false
   });
   
   const jsonObj = parser.parse(xmlData);
