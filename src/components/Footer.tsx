@@ -12,6 +12,9 @@ const Footer = () => {
         </p>
 
         <div className="flex items-center justify-center gap-6 text-muted-foreground">
+          <a href="#book" className="text-sm hover:text-primary transition-colors">
+            Book
+          </a>
           <a href="#podcast" className="text-sm hover:text-primary transition-colors">
             Listen
           </a>
